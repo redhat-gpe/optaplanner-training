@@ -1,0 +1,18 @@
+:scrollbar:
+:data-uri:
+:toc2:
+:numbered:
+
+= Planning Problems
+
+Print link:lab0.pdf[the exercises on paper] and complete them.
+Verify your answers with the OptaPlanner examples:
+
+* Open the NQueens example and quick open dataset `8queens`.
+* Open the Traveling Salesman example and import dataset `tutorial/st68.tsp`.
+  Right click to connect a location to the end of the trip.
+
+
+ifdef::showscript[]
+
+endif::showscript[]
