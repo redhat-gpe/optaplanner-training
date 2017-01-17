@@ -1,0 +1,88 @@
+:scrollbar:
+:data-uri:
+:toc2:
+:numbered:
+
+= No more than 4 processes per computer Lab
+
+The customer's use case is closely resembles the OptaPlanner example CloudBalancing.
+But there's 1 big difference:
+
+* Don't assign too many processes to the same computer
+
+==== Preparation
+
+. Import as a new project in your favorite IDE: `optaplanner-training-lab101/pom.xml`
+. Create a new run configuration:
+.. Main class: `org.optaplanner.examples.cloudbalancing.app.CloudBalancingApp`
+.. VM parameters (optional): `-Xmx512M -server`
+.. Working directory: `optaplanner-training-lab101` (this is the directory that contains the directory `data`)
+. Run the run configuration.
+.. _Quick open_ `4computer-12processes.xml`, _solve_ it and _terminate solving early_ after about 20 seconds.
+.. Notice how the solution assigns 6 processes to computer 0:
++
+image::cloudBalancing_4computers-12processes.png[]
+.. Leave this window open to compare it later with your modified version.
+
+==== Assignment
+
+. Add a new hard constraint: no computer should have more than 4 processes assigned to it.
+
+==== Success criteria
+
+. _Open_ and _solve_ `4computer-12processes.xml`. It should no longer have a computer with more than 4 processes:
++
+image::lab101_cloudBalancing_4computers-12processes.png[]
+. _Open_ and _solve_ `100computer-300processes.xml`, in both the old and the new window. Compare the results.
+.. Both solutions should become feasible (`0hard`).
+.. The old window's soft score is clearly better because it has more flexibility.
+
+==== Tips
+
+* Add a new score rule in the file `cloudBalancingScoreRules.drl`. No other files require changes.
+* Read up about http://docs.optaplanner.org/latest/optaplanner-docs/html_single/index.html#scoreTrap[score traps],
+especially if `100computer-300processes.xml` does not become feasible.
+
+[.solution]
+==== Solution
+
+===== Implementation
+
+. Add this rule in the file `cloudBalancingScoreRules.drl`:
++
+[source,drl]
+----
+rule "atMost4ProcessesPerComputer"
+    when
+      $computer : CloudComputer()
+      accumulate(
+          $c : CloudProcess(computer == $computer);
+          $count : count($c);
+          $count > 4
+      )
+    then
+        scoreHolder.addHardConstraintMatch(kcontext, 4 - $count.intValue());
+end
+----
+
+===== Pitfalls
+
+A computer that has 6 processes is worse than a computer that has 5 processes.
+The score function should reflect that, even if the customer's business analyst does not want to think
+about any solution for which a computer has more than 4 computers (because it's an infeasible solution).
+
+This code might trigger a http://docs.optaplanner.org/latest/optaplanner-docs/html_single/index.html#scoreTrap[score trap]:
+
+[source,drl]
+----
+rule "atMost4ProcessesPerComputer"
+  when
+    ...
+  then
+    scoreHolder.addHardConstraintMatch(kcontext, -1); // BAD: score trap
+end
+----
+
+ifdef::showscript[]
+
+endif::showscript[]
