@@ -6,7 +6,7 @@ ifdef::revealjs_slideshow[]
 == &nbsp;
 
 [#cover-h1]
-Business Rule Optimazation using JBoss Planner
+Business Resource Optimization With OptaPlanner
 
 [#cover-h2]
 Customizing Score Functions
