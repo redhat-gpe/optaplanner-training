@@ -1,0 +1,34 @@
+:scrollbar:
+:data-uri:
+:toc2:
+:numbered:
+
+= Worker Rostering Lab
+
+Implement this use case given a domain model and data.
+
+Schedule steel mill workers into shifts on different spots at different timeslots.
+
+==== Constraints
+
+Hard constraints:
+
+* Required skill for a shift
+* Unavailable time slots for an employee
+* At most one shift assignment per day per employee
+* No 2 shifts within 10 hours from each other
+
+Soft constraints:
+
+* Fairness: all employees should work about the same number of shifts
+* Affinity: assign an employee to the same spot as much as possible
+
+Other requirements:
+
+* Don't change shift assignments locked by the user.
+
+* Don't change historic shift assignments.
+
+ifdef::showscript[]
+
+endif::showscript[]

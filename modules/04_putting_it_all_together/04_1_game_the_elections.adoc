@@ -1,0 +1,27 @@
+:scrollbar:
+:data-uri:
+:toc2:
+:numbered:
+
+= Game the Elections Lab
+
+Implement this use case given a domain model and data.
+
+Decide in which US states half of the population plus one should vote for the gamer candidate,
+for that candidate to win with as little votes as possible.
+
+==== Constraints
+
+Presume everyone US citizen votes and there are only 2 candidates.
+
+Hard constraints:
+
+* The gamer candidate must collect at least 270 EC votes.
+
+Soft constraints:
+
+* Minimize the number of votes for the gamer candidate.
+
+ifdef::showscript[]
+
+endif::showscript[]

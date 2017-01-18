@@ -1,0 +1,117 @@
+:scrollbar:
+:data-uri:
+:toc2:
+:numbered:
+
+= House Cleaner Scheduling Lab
+
+==== Problem description
+
+A cleaning company cleans houses. It needs to match cleaners and houses in a week.
+
+* Each cleaner cleans exactly 1 house per day. He/she cleans it entirely during that day, alone.
+* Each house needs to be cleaned once, at a specified day of the week (determined by the house owner).
+* A cleaner works from Monday to Friday. some cleaners work only 3 days in a week, but the company can chose when.
+* A cleaner travels from his/her home to one house in the morning and travels back in the evening.
+
+Plan a schedule of the cleaning company for an entire week. Minimize the overall travelling distance of the cleaners.
+
+==== Assignment
+
+. What is the planning entity class(es)?
+. What is the planning variable(s)?
+. What is the planning value class(es)?
+. Extra credit: Write the DRL score rules in pseudo code.
+. Smart-ass extra credit: Why does the problem description stipulate that some cleaners don't work full-time?
+What would happen if they all work full-time?
+
+Presume there is a `Location` class with a functioning `long getDistance(Location)` method.
+
+==== Success criteria
+
+. Describe the relevant domain classes and their fields.
+.. Add the `@PlanningEntity` annotation and the `@PlanningVariable` annotation where needed.
+
+[.solution]
+==== Solution
+
+===== Answers
+
+. Planning entity class: `House`
+. Planning variable: `House.getCleaner()`
+. Planning value class: `Cleaner`
+
+===== Domain code
+
+[source,java]
+----
+public class Cleaner {
+    private Location home;
+}
+----
+
+[source,java]
+----
+@PlanningEntity
+public class House {
+    private Location location;
+    private DayOfWeek dayOfWeek;
+
+    // Note: annotation must be on getter instead of field
+    @PlanningVariable private Cleaner cleaner;
+
+}
+----
+
+* Why is `House` is the planning entity and not `Cleaner`?
+** 1 cleaner handles multiple houses, but 1 house has only 1 cleaner, so `House` has a _manyToOne_ relationship to `Cleaner`.
+** Furthermore, the number of `House` instances is stable during planning.
+* What about the travelling distance constraint? Isn't this like Vehicle Routing?
+Isn't the planning variable _chained_?
+** No. The cleaners go home after every house.
+** So it doesn't matter which house they cleaned the day before, because they always have to go home first.
+** So it's not like TSP/VRP. So there's no need for the complexity of chained planning variables.
+** Furthermore, because the DayOfWeek is fixed, introducing chained variables would require additional constraint rules.
+
+===== Score rules
+
+[source,drl]
+----
+rule "Conflict: 1 cleaner has to clean 2 houses on the same day of week"
+when
+   House($c : cleaner, $d : dayOfweek, $leftId : id)
+   House(cleaner == $c, dayOfWeek == $d, id > $leftId)
+then
+   scoreholder.addHardConstraintMatch(kcontext, -1);
+end
+----
+
+[source,drl]
+----
+rule "Minimize travelling distance"
+when
+   House($d : location.getDistance(cleaner.home)))
+then
+   scoreholder.addSoftConstraintMatch(kcontext, - $d);
+end
+----
+
+Note: This last rule doesn't imply fairness across the cleaners.
+For example, if all cleaners live in Manhattan and 98 houses are in Manhattan, but 2 houses are in Queens,
+it's still possible that both Queens houses are assigned to the same cleaner (which really isn't fair).
+To make it fair, apply the http://docs.optaplanner.org/latest/optaplanner-docs/html_single/index.html#fairnessScoreConstraints[fairness trick].
+
+===== What would happen if all cleaners work full-time?
+
+Then we can split up the planning problem of an entire week into 5 separate problems, once per day, without losing score quality, because:
+
+* The DayOfWeek of every house is fixed.
+* The number of times a cleaner works on other days doesn't constrain the planning of 1 day.
+
+It's far easier to solve 5 smaller problems, than to solve 1 big one.
+But because not all cleaners work full-time, we must not do that,
+because during the split up it's impossible to predict which days a half-time working cleaner needs to work.
+
+ifdef::showscript[]
+
+endif::showscript[]

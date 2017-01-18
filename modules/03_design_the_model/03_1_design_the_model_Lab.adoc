@@ -3,7 +3,16 @@
 :toc2:
 :numbered:
 
-= Customizing Score Functions Lab Overview
+= Desiging the Model
+
+The most difficult thing to learn is - by far - how to design a good domain model. Which class is a planning entity? Which property is a planning variable?
+
+== Exercise
+
+Print link:lab200A.pdf[lab 200 A] and link:lab200B.pdf[lab 200 B] and then complete them.
+
+Each solution is in the docs: each problem is an existing example
+with a annotated class diagram in the docs
 
 
 ifdef::showscript[]
