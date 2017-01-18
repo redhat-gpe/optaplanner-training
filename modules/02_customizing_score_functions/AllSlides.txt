@@ -1,1 +1,1 @@
-include:cover.adoc[]
+include::cover.adoc[]
